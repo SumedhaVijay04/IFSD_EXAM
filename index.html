@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Shopping Complex</title>
+  <script src="https://unpkg.com/react/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/babel-standalone/babel.min.js"></script>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+
+    class Shop {
+      constructor(name, rent) {
+        this.name = name;
+        this.rent = rent;
+      }
+    }
+
+    class ShoppingComplex extends React.Component {
+      constructor(props) {
+        super(props);
+        this.state = {
+          shops: []
+        };
+      }
+
+      addShop = () => {
+        const name = prompt("Enter the name of the shop:");
+        const rent = parseFloat(prompt("Enter the rent for the shop:"));
+
+        const shop = new Shop(name, rent);
+        this.setState(prevState => ({
+          shops: [...prevState.shops, shop]
+        }));
+      };
+
+      updateShop = (name) => {
+        const { shops } = this.state;
+        const updatedShop = shops.find(shop => shop.name === name);
+        if (updatedShop) {
+          const updatedRent = parseFloat(prompt("Enter the updated rent for the shop:"));
+          updatedShop.rent = updatedRent;
+          this.setState({ shops: [...shops] });
+          console.log('Shop updated.');
+        } else {
+          console.log('Shop not found.');
+        }
+      };
+
+      deleteShop = (name) => {
+        const { shops } = this.state;
+        const updatedShops = shops.filter(shop => shop.name !== name);
+        if (updatedShops.length === shops.length) {
+          console.log('Shop not found.');
+        } else {
+          this.setState({ shops: updatedShops });
+          console.log('Shop deleted.');
+        }
+      };
+
+      calculateTotalRent = () => {
+        const { shops } = this.state;
+        let totalRent = 0;
+        for (let i = 0; i < shops.length; i++) {
+          totalRent += shops[i].rent;
+        }
+        return totalRent;
+      };
+
+      handleMenuSelection = (choice) => {
+        switch (choice) {
+          case "1":
+            this.addShop();
+            break;
+          case "2":
+            this.updateShop(prompt("Enter the name of the shop to update:"));
+            break;
+          case "3":
+            this.deleteShop(prompt("Enter the name of the shop to delete:"));
+            break;
+          case "4":
+            console.log(`Total Rent: ${this.calculateTotalRent()}`);
+            break;
+          default:
+            console.log("Invalid choice!");
+        }
+      };
+
+      render() {
+        const { shops } = this.state;
+        const totalRent = this.calculateTotalRent();
+
+        return (
+          <div>
+            <h2>Shopping Complex</h2>
+
+            <div>
+              <h3>Options:</h3>
+              <p>1. Add Shop</p>
+              <p>2. Update Shop</p>
+              <p>3. Delete Shop</p>
+              <p>Choose an option (1-3): <input type="text" id="menuChoice" /></p>
+              <button onClick={() => this.handleMenuSelection(document.getElementById("menuChoice").value)}>
+                Submit
+              </button>
+            </div>
+
+            <h3>Shop List</h3>
+            <ul>
+              {shops.map((shop, index) => (
+                <li key={index}>
+                  Name: {shop.name}, Rent: {shop.rent}
+                </li>
+              ))}
+            </ul>
+
+            <p>Total Rent: {totalRent}</p>
+          </div>
+        );
+      }
+    }
+
+    ReactDOM.render(<ShoppingComplex />, document.getElementById("root"));
+
+  </script>
+</body>
+
+</html>
